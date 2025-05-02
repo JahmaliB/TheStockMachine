@@ -11,7 +11,7 @@ function App() {
   const [filteredFavorites, setFilteredFavorites] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const apiKey = '4MAYKRBW4APEJCXZ'; // Your Alpha Vantage API key
+  const apiKey = '4MAYKRBW4APEJCXZ';
 
   // Load favorites from localStorage
   useEffect(() => {
@@ -19,6 +19,11 @@ function App() {
     setFavorites(savedFavorites);
     setFilteredFavorites(savedFavorites);
   }, []);
+
+  const calculateGrowthRate = (currentValue, previousValue) => {
+    if (!currentValue || !previousValue || previousValue === 0) return 'N/A';
+    return (((currentValue - previousValue) / Math.abs(previousValue)) * 100).toFixed(2);
+  };
 
   const handleSearch = async (ticker) => {
     if (!ticker) {
@@ -30,64 +35,53 @@ function App() {
     setError(null);
     
     try {
-      // First check if we have cached data
-      const cachedData = sessionStorage.getItem(`stock_${ticker}`);
-      if (cachedData) {
-        const parsedData = JSON.parse(cachedData);
-        if (Date.now() - parsedData.timestamp < 300000) { // 5 minute cache
-          setStockData(parsedData.data);
-          setLoading(false);
-          return;
-        }
-      }
-
-      // Get both quote and overview data in parallel
-      const [quoteResponse, overviewResponse] = await Promise.all([
+      // Get all required data in parallel
+      const [quoteResponse, overviewResponse, earningsResponse] = await Promise.all([
         fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${ticker}&apikey=${apiKey}`),
-        fetch(`https://www.alphavantage.co/query?function=OVERVIEW&symbol=${ticker}&apikey=${apiKey}`)
+        fetch(`https://www.alphavantage.co/query?function=OVERVIEW&symbol=${ticker}&apikey=${apiKey}`),
+        fetch(`https://www.alphavantage.co/query?function=EARNINGS&symbol=${ticker}&apikey=${apiKey}`)
       ]);
 
-      const [quoteData, overviewData] = await Promise.all([
+      const [quoteData, overviewData, earningsData] = await Promise.all([
         quoteResponse.json(),
-        overviewResponse.json()
+        overviewResponse.json(),
+        earningsResponse.json()
       ]);
 
       // Check for API errors
-      if (quoteData['Error Message'] || overviewData['Error Message']) {
-        throw new Error(quoteData['Error Message'] || overviewData['Error Message']);
+      if (quoteData['Error Message'] || overviewData['Error Message'] || earningsData['Error Message']) {
+        throw new Error(quoteData['Error Message'] || overviewData['Error Message'] || earningsData['Error Message']);
       }
 
-      // Check for rate limiting
-      if (quoteData.Note || overviewData.Note) {
-        throw new Error(quoteData.Note || overviewData.Note || 'API rate limit exceeded');
-      }
-
-      // Get price - prioritize GLOBAL_QUOTE
+      // Get price
       const price = quoteData['Global Quote']?.['05. price'] 
-        ? parseFloat(quoteData['Global Quote']['05. price']) 
+        ? parseFloat(quoteData['Global Quote']['05. price']).toFixed(2)
         : 'N/A';
 
-      // Get P/E Ratio with fallback to 'N/A'
+      // Get P/E Ratio
       const peRatio = overviewData.PERatio 
-        ? parseFloat(overviewData.PERatio).toFixed(2) 
+        ? parseFloat(overviewData.PERatio).toFixed(2)
         : 'N/A';
 
-      // Get Growth Rate (using Quarterly Earnings Growth)
-      const growthRate = overviewData.QuarterlyEarningsGrowth 
-        ? parseFloat(overviewData.QuarterlyEarningsGrowth).toFixed(2) 
-        : 'N/A';
+      // Calculate Growth Rate (using quarterly earnings)
+      let growthRate = 'N/A';
+      if (earningsData.quarterlyEarnings?.length >= 4) {
+        const currentEPS = parseFloat(earningsData.quarterlyEarnings[0]?.reportedEPS);
+        const previousEPS = parseFloat(earningsData.quarterlyEarnings[4]?.reportedEPS);
+        growthRate = calculateGrowthRate(currentEPS, previousEPS);
+      }
 
-      // Calculate Growth/P/E if both values are available
-      const growthToPE = (growthRate !== 'N/A' && peRatio !== 'N/A') 
-        ? (growthRate / peRatio).toFixed(2) 
+      // Calculate Growth P/E
+      const growthPE = (growthRate !== 'N/A' && peRatio !== 'N/A')
+        ? (peRatio / growthRate).toFixed(2)
         : 'N/A';
 
       // Get 52-week range
       const week52High = overviewData['52WeekHigh'] 
-        ? parseFloat(overviewData['52WeekHigh']).toFixed(2) 
+        ? parseFloat(overviewData['52WeekHigh']).toFixed(2)
         : 'N/A';
       const week52Low = overviewData['52WeekLow'] 
-        ? parseFloat(overviewData['52WeekLow']).toFixed(2) 
+        ? parseFloat(overviewData['52WeekLow']).toFixed(2)
         : 'N/A';
 
       const transformedData = {
@@ -96,19 +90,13 @@ function App() {
         price: price,
         peRatio: peRatio,
         growthRate: growthRate,
-        growthToPE: growthToPE,
+        growthPE: growthPE,
         week52High: week52High,
         week52Low: week52Low,
         industry: overviewData.Industry || 'N/A',
         currency: overviewData.Currency || 'USD',
         lastUpdated: new Date().toISOString()
       };
-
-      // Cache the data
-      sessionStorage.setItem(`stock_${ticker}`, JSON.stringify({
-        data: transformedData,
-        timestamp: Date.now()
-      }));
 
       setStockData(transformedData);
     } catch (err) {
@@ -129,7 +117,7 @@ function App() {
         price: stock.price,
         peRatio: stock.peRatio,
         growthRate: stock.growthRate,
-        growthToPE: stock.growthToPE,
+        growthPE: stock.growthPE,
         week52High: stock.week52High,
         week52Low: stock.week52Low,
         industry: stock.industry || 'N/A',
