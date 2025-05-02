@@ -8,7 +8,6 @@ const StockDisplay = ({ stockData, onFavorite }) => {
     price, 
     peRatio, 
     growthRate, 
-    growthToPE, 
     week52High, 
     week52Low,
     industry
@@ -20,23 +19,23 @@ const StockDisplay = ({ stockData, onFavorite }) => {
       <div className="stock-metrics">
         <div className="metric">
           <span className="metric-label">Price:</span>
-          <span className="metric-value">${price}</span>
+          <span className="metric-value"> ${price}</span>
         </div>
         <div className="metric">
           <span className="metric-label">P/E Ratio:</span>
-          <span className="metric-value">{peRatio}</span>
+          <span className="metric-value"> {peRatio}</span>
         </div>
         <div className="metric">
           <span className="metric-label">Growth Rate:</span>
-          <span className="metric-value">{growthRate}%</span>
+          <span className="metric-value"> {growthRate}%</span>
         </div>
         <div className="metric">
           <span className="metric-label">Growth/P/E:</span>
-          <span className="metric-value">{growthToPE}</span>
+          <span className="metric-value"> {peRatio !== 0 ? ((growthRate / peRatio).toFixed(2)): "N/A"}</span>
         </div>
         <div className="metric">
           <span className="metric-label">52 Week Range:</span>
-          <span className="metric-value">${week52Low} - ${week52High}</span>
+          <span className="metric-value">$ {parseFloat(week52Low) - parseFloat(week52High)}</span>
         </div>
         <div className="metric">
           <span className="metric-label">Industry:</span>
