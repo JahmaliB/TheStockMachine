@@ -193,6 +193,7 @@ function App() {
         
         {/* Main content area with stock display and favorites list */}
         <div className="stock-content">
+          {/* Component to display current stock data */}
           <StockDisplay 
             stockData={stockData} 
             onFavorite={handleAddFavorite} 
