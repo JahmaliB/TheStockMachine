@@ -4,6 +4,7 @@ import SearchStock from './components/SearchStock';
 import StockDisplay from './components/StockDisplay';
 import FavoritesList from './components/FavoritesList';
 import './App.css';
+import './style.css';
 
 function App() {
   const [stockData, setStockData] = useState(null);

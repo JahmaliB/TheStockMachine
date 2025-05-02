@@ -1,6 +1,7 @@
 import React from 'react';
 import IndustryFilter from './IndustryFilter';
 
+
 const FavoritesList = ({ favorites, onRemoveFavorite, onFilterByIndustry, currentIndustry }) => {
   const industries = [...new Set(favorites.map(fav => fav.industry))];
 
