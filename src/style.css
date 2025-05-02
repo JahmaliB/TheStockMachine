@@ -1,0 +1,259 @@
+/* Base Styles */
+:root {
+    --primary: #2962ff;
+    --primary-dark: #0039cb;
+    --secondary: #ff6d00;
+    --light-gray: #f5f5f5;
+    --medium-gray: #e0e0e0;
+    --dark-gray: #424242;
+    --success: #00c853;
+    --error: #d50000;
+  }
+  
+  body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #333232;
+    color: #212121;
+    line-height: 1.6;
+  }
+  
+  /* App Layout */
+  .app-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .app-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--medium-gray);
+  }
+  
+  .app-header h1 {
+    color: var(--primary);
+    margin: 0;
+    font-size: 2.5rem;
+  }
+  
+  .app-content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+  
+  /* Search Container */
+  .search-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto 30px;
+  }
+  
+  .search-form {
+    display: flex;
+    width: 100%;
+  }
+  
+  .search-form input {
+    flex: 1;
+    padding: 12px 15px;
+    border: 1px solid var(--medium-gray);
+    border-radius: 4px 0 0 4px;
+    font-size: 1rem;
+    transition: border 0.3s;
+  }
+  
+  .search-form input:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+  
+  .search-form button {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 0 16px;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    transition: background 0.3s;
+  }
+  
+  .search-form button:hover {
+    background-color: var(--primary-dark);
+  }
+  
+  /* Main Content Grid - UPDATED */
+  .stock-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  @media (min-width: 768px) {
+    .stock-content {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  
+  /* Stock Display */
+  .stock-display {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .stock-display h2 {
+    margin-top: 0;
+    color: var(--primary);
+    font-size: 1.8rem;
+  }
+  
+  .stock-metrics {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin: 20px 0;
+  }
+  
+  .metric {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 15px;
+    background-color: var(--light-gray);
+    border-radius: 4px;
+  }
+  
+  .metric-label {
+    font-weight: 500;
+    color: var(--dark-gray);
+  }
+  
+  .metric-value {
+    font-weight: 600;
+  }
+  
+  .favorite-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .favorite-btn:hover {
+    background-color: var(--primary-dark);
+  }
+  
+  /* Favorites List */
+  .favorites-list {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .favorites-list h2 {
+    margin-top: 0;
+    color: var(--primary);
+  }
+  
+  .no-favorites {
+    text-align: center;
+    color: var(--dark-gray);
+    padding: 20px;
+  }
+  
+  .favorites-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 0;
+    list-style: none;
+  }
+  
+  .favorite-item {
+    background: var(--light-gray);
+    border-radius: 6px;
+    padding: 15px;
+    position: relative;
+  }
+  
+  .stock-info {
+    margin-bottom: 10px;
+  }
+  
+  .stock-symbol {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--primary);
+  }
+  
+  .remove-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: var(--error);
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 5px;
+  }
+  
+  .remove-btn:hover {
+    text-decoration: underline;
+  }
+  
+  /* Industry Filter */
+  .industry-filter {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .industry-filter select {
+    padding: 8px 12px;
+    border: 1px solid var(--medium-gray);
+    border-radius: 4px;
+  }
+  
+  .clear-filter {
+    padding: 8px 12px;
+    background: var(--medium-gray);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .clear-filter:hover {
+    background: #d0d0d0;
+  }
+  
+  /* Loading and Error States */
+  .loading, .error {
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .loading {
+    background-color: #e3f2fd;
+    color: var(--primary);
+  }
+  
+  .error {
+    background-color: #ffebee;
+    color: var(--error);
+  }

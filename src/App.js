@@ -4,8 +4,10 @@ import SearchStock from './components/SearchStock';
 import StockDisplay from './components/StockDisplay';
 import FavoritesList from './components/FavoritesList';
 import './App.css';
+import './style.css';
 
 function App() {
+  const [currentIndustry, setCurrentIndustry] = useState('');
   // State for storing the currently displayed stock data
   const [stockData, setStockData] = useState(null);
   // State for storing favorite stocks
@@ -143,49 +145,43 @@ function App() {
       // Update both favorites and filtered favorites
       setFavorites(updatedFavorites);
       setFilteredFavorites(updatedFavorites);
-      // Persist to localStorage
       localStorage.setItem('favoriteStocks', JSON.stringify(updatedFavorites));
     }
   };
 
   // Handler for removing a stock from favorites
   const handleRemoveFavorite = (symbol) => {
-    // Filter out the stock to be removed
     const updatedFavorites = favorites.filter(stock => stock.symbol !== symbol);
-    // Update both favorites and filtered favorites
     setFavorites(updatedFavorites);
     setFilteredFavorites(updatedFavorites);
-    // Persist to localStorage
     localStorage.setItem('favoriteStocks', JSON.stringify(updatedFavorites));
   };
 
   // Handler for filtering favorites by industry
   const handleFilterByIndustry = (industry) => {
-    setFilteredFavorites(
-      industry 
-        ? favorites.filter(stock => stock.industry === industry) 
-        : favorites
-    );
+    setCurrentIndustry(industry);
+    const updatedList = industry
+      ? favorites.filter(stock => stock.industry === industry)
+      : favorites;
+    setFilteredFavorites(updatedList);
   };
+  
 
   // Main component render
   return (
     <Layout>
       <div className="app-content">
-        {/* Search component */}
         <SearchStock 
           onSearch={handleSearch} 
           disabled={loading}
         />
         
-        {/* Loading indicator */}
         {loading && (
           <div className="loading">
             Loading... (API has 5 requests/minute limit)
           </div>
         )}
         
-        {/* Error display */}
         {error && (
           <div className="error">
             {error}
@@ -204,11 +200,11 @@ function App() {
             isFavorite={favorites.some(fav => fav.symbol === stockData?.symbol)}
           />
           
-          {/* Component to display and manage favorites */}
           <FavoritesList 
             favorites={filteredFavorites} 
             onRemoveFavorite={handleRemoveFavorite}
             onFilterByIndustry={handleFilterByIndustry}
+            currentIndustry={currentIndustry}
           />
         </div>
       </div>

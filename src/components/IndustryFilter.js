@@ -11,7 +11,14 @@ const IndustryFilter = ({
       <label htmlFor="industry-select">Filter by Industry: </label>
       <select
         id="industry-select"
-        onChange={(e) => onFilterChange(e.target.value)}
+        onChange={(e) => {
+          const value = e.target.value;
+          if (value === "") {
+            onClearFilter();
+          } else {
+            onFilterChange(value); 
+          }
+        }}
         value={currentIndustry || ''}
       >
         <option value="">All Industries</option>
