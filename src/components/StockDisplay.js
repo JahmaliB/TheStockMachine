@@ -35,7 +35,7 @@ const StockDisplay = ({ stockData, onFavorite }) => {
         </div>
         <div className="metric">
           <span className="metric-label">52 Week Range:</span>
-          <span className="metric-value">$ {parseFloat(week52Low) - parseFloat(week52High)}</span>
+          <span className="metric-value">$ {week52Low} - ${week52High}</span>
         </div>
         <div className="metric">
           <span className="metric-label">Industry:</span>
